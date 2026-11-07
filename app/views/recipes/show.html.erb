@@ -1,0 +1,23 @@
+<section class="detail-page">
+  <%= link_to "← All recipes", root_path, class: "back-link" %>
+  <p class="eyebrow">FROM THE RECIPE BOX</p>
+  <h1><%= @recipe.title %></h1>
+  <div class="recipe-columns">
+    <div class="recipe-panel">
+      <h3>Ingredients</h3>
+      <ul class="ingredient-list">
+        <% @recipe.ingredients.lines.map(&:strip).reject(&:blank?).each do |ingredient| %>
+          <li><span class="ingredient-dot"></span><%= ingredient %></li>
+        <% end %>
+      </ul>
+    </div>
+    <div class="recipe-panel">
+      <h3>Let’s make it</h3>
+      <ol class="instruction-list">
+        <% @recipe.instruction_steps.each do |step| %>
+          <li><span><%= step %></span></li>
+        <% end %>
+      </ol>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+require "fileutils"
+
+APP_ROOT = File.expand_path("..", __dir__)
+Dir.chdir(APP_ROOT) do
+  puts "Installing dependencies..."
+  unless system("bundle check")
+    abort "Could not install bundle dependencies." unless system("bundle install")
+  end
+
+  puts "Preparing the database..."
+  abort "Could not prepare the database." unless system(Gem.ruby, "bin/rails", "db:prepare")
+
+  puts "Loading the sample recipes..."
+  abort "Could not load sample recipes." unless system(Gem.ruby, "bin/rails", "db:seed")
+end

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>BhashaBite — Recipes in your voice</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#f7f4ed">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", defer: true, "data-turbo-track": "reload" %>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="<%= root_path %>" aria-label="BhashaBite home">
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span>Bhasha<span class="brand-accent">Bite</span></span>
+      </a>
+      <span class="header-note">Regional recipes, spoken simply</span>
+    </header>
+    <main>
+      <%= yield %>
+    </main>
+    <footer class="site-footer">Made for the joy of cooking, wherever home is.</footer>
+  </body>
+</html>

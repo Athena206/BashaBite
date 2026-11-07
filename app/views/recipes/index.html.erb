@@ -1,0 +1,91 @@
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">YOUR KITCHEN COMPANION</p>
+    <h1>What are we<br><span>cooking today?</span></h1>
+    <p class="hero-description">Ask for a recipe in your own words. We’ll find the steps and read them aloud while you cook.</p>
+  </div>
+  <div class="voice-card">
+    <div class="voice-card-heading">
+      <span class="eyebrow">ASK BASHABITE</span>
+      <span class="live-dot" aria-hidden="true"></span>
+    </div>
+    <%= form_with url: voice_assistant_path, multipart: true, class: "voice-form", id: "voice-form" do %>
+      <%= file_field_tag :audio_file, accept: "audio/*", class: "visually-hidden", id: "audio-file" %>
+      <button class="record-button" type="button" id="record-button" aria-label="Start recording">
+        <span class="mic-icon" aria-hidden="true">🎙</span>
+      </button>
+      <p class="record-status" id="record-status">Tap to ask by voice</p>
+      <p class="record-hint">or <button class="text-button" type="button" id="upload-button">upload an audio question</button></p>
+      <p class="record-hint" id="recording-timer" aria-live="polite"></p>
+      <%= submit_tag "Find my recipe", class: "submit-button", id: "submit-button", disabled: true %>
+    <% end %>
+    <p class="voice-error" role="alert"><%= @voice_error %></p>
+    <% if @transcript.present? %>
+      <div class="transcript">
+        <span class="eyebrow">I HEARD</span>
+        <p>“<%= @transcript %>”</p>
+      </div>
+    <% end %>
+    <% if @not_found %>
+      <p class="notice">I couldn’t find a close recipe match. Try asking for a dish by name.</p>
+    <% end %>
+  </div>
+</section>
+
+<% if @recipe %>
+  <section class="result-section" aria-live="polite">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">YOUR RECIPE</p>
+        <h2><%= @recipe.title %></h2>
+      </div>
+      <% if @audio&.dig(:url) %>
+        <audio controls preload="none" src="<%= @audio[:url] %>">Your browser does not support audio playback.</audio>
+      <% elsif @audio&.dig(:data_uri) %>
+        <audio controls preload="none" src="<%= @audio[:data_uri] %>">Your browser does not support audio playback.</audio>
+      <% end %>
+    </div>
+    <div class="recipe-columns">
+      <div class="recipe-panel">
+        <h3>Ingredients</h3>
+        <ul class="ingredient-list">
+          <% @recipe.ingredients.lines.map(&:strip).reject(&:blank?).each do |ingredient| %>
+            <li><span class="ingredient-dot"></span><%= ingredient %></li>
+          <% end %>
+        </ul>
+      </div>
+      <div class="recipe-panel">
+        <h3>Let’s make it</h3>
+        <ol class="instruction-list">
+          <% @recipe.instruction_steps.each do |step| %>
+            <li><span><%= step %></span></li>
+          <% end %>
+        </ol>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<section class="collection-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">A LITTLE INSPIRATION</p>
+      <h2>From our recipe box</h2>
+    </div>
+    <span class="recipe-count"><%= pluralize(@recipes.size, "recipe") %></span>
+  </div>
+  <% if @recipes.any? %>
+    <div class="recipe-grid">
+      <% @recipes.each do |recipe| %>
+        <article class="recipe-card">
+          <div class="recipe-card-top"><span class="dish-icon" aria-hidden="true">✳</span><span class="card-label">REGIONAL FAVORITE</span></div>
+          <h3><%= link_to recipe.title, recipe_path(recipe) %></h3>
+          <p><%= truncate(recipe.ingredients.lines.map(&:strip).reject(&:blank?).join(" · "), length: 110) %></p>
+          <%= link_to "View recipe", recipe_path(recipe), class: "card-link" %>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="empty-state">Recipes will appear here once they’re added to the recipe box.</p>
+  <% end %>
+</section>
