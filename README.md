@@ -6,7 +6,7 @@ BhashaBite is a Ruby on Rails recipe assistant for hands-free cooking. Ask a que
 
 - Record audio in the browser or upload an audio file.
 - Send the question to Gnani AI Prisma (speech-to-text), then match recognized words against recipe names and ingredients.
-- Display recipe ingredients and instructions, and request audio from Gnani AI Timbre (text-to-speech).
+- Display recipe ingredients and instructions, and narrate the title, ingredients, and steps with Gnani AI Timbre (text-to-speech). Playback starts automatically when the browser permits, with a visible listen/pause control as a fallback. Audio is fetched from Rails as binary; the Gnani key stays server-side.
 - Browse recipes grouped into Chinese, North Indian, South Indian, Bengali, Gujarati, and Marathi cuisine sections.
 - Surface missing configuration, API, upload, and recipe-match errors instead of choosing a random recipe.
 
@@ -51,13 +51,14 @@ After saving `.env`, stop Rails with `Ctrl+C` and start it again. The server wil
 | `GNANI_TTS_ENDPOINT` | Yes | Full Timbre text-to-speech endpoint URL |
 | `GNANI_STT_FILE_FIELD` | No | Multipart audio field name; defaults to `audio_file` |
 | `GNANI_STT_MODEL` | No | Prisma model; defaults to `prisma-v3.0` |
-| `GNANI_STT_LANGUAGE_CODE` | No | Language hint; defaults to `indic-auto` |
+| `GNANI_STT_LANGUAGE_CODE` | No | Language hints; defaults to `en-IN,hi-IN` |
+| `GNANI_STT_FORMAT` | No | Transcript output format; defaults to `transliterate` (Latin script) |
 | `GNANI_STT_TRANSCRIPT_FIELD` | No | STT JSON response field containing the transcript; defaults to `transcript` |
 | `GNANI_TTS_MODEL` | No | Timbre model; defaults to `timbre-v3.0` |
 | `GNANI_TTS_VOICE` | No | Timbre voice; defaults to `Shivani` |
 | `GNANI_TTS_LANGUAGE` | No | TTS language or `auto`; defaults to `auto` |
 
-For both speech-to-text and text-to-speech, the app sends the raw API key in the `X-API-Key-ID` header. STT uses multipart form fields `audio_file`, `model`, and `language_code`; the endpoint accepts clips up to 30 seconds. TTS sends JSON containing `text`, `model`, `voice`, and `language`, and receives raw WAV audio.
+For both speech-to-text and text-to-speech, the app sends the raw API key in the `X-API-Key-ID` header. STT uses multipart form fields `audio_file`, `model`, `language_code`, and `format`; by default it hints English and Hindi and returns the transcript in Latin script. The endpoint accepts clips up to 30 seconds. TTS sends JSON containing `text`, `model`, `voice`, and `language`, and receives raw WAV audio.
 
 Use only endpoint URLs in the environment variables; do not include HTTP methods or headers. The STT documentation lists WAV, MP3, OGG, FLAC, AAC, and M4A, with a maximum clip duration of 30 seconds. A `403` `SCOPE_NOT_ALLOWED` response means the API key lacks permission for that service; ask Gnani to enable STT and/or TTS access for the key.
 

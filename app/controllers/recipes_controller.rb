@@ -13,6 +13,14 @@ class RecipesController < ApplicationController
     @recipe = Recipe.find(params[:id])
   end
 
+  def audio
+    recipe = Recipe.find(params[:id])
+    result = GnaniVoice.new.synthesize(recipe.narration_text)
+    send_data result[:body], type: result[:content_type], disposition: "inline"
+  rescue GnaniVoice::Error => error
+    render plain: error.message, status: :bad_gateway
+  end
+
   def voice_assistant
     upload = params[:audio_file]
     validate_audio_upload!(upload)
@@ -21,9 +29,7 @@ class RecipesController < ApplicationController
     @transcript = voice.transcribe(upload)
     @recipe = RecipeSearch.call(@transcript)
 
-    if @recipe
-      @audio = voice.synthesize(@recipe.instructions)
-    else
+    unless @recipe
       @not_found = true
     end
 

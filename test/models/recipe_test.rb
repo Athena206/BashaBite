@@ -22,4 +22,17 @@ class RecipeTest < ActiveSupport::TestCase
     assert_not recipe.valid?
     assert_includes recipe.errors.attribute_names, :cuisine
   end
+
+  test "builds narration from the recipe title, ingredients, and instructions" do
+    recipe = Recipe.new(
+      title: "Masala Dosa",
+      ingredients: "Dosa batter\nPotatoes\n",
+      instructions: "Prepare the filling.\nCook the dosa."
+    )
+
+    assert_equal(
+      "Masala Dosa\nIngredients: Dosa batter, Potatoes.\nInstructions: Prepare the filling. Cook the dosa.",
+      recipe.narration_text
+    )
+  end
 end

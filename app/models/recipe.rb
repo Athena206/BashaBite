@@ -9,4 +9,12 @@ class Recipe < ApplicationRecord
   def instruction_steps
     instructions.lines.map(&:strip).reject(&:blank?)
   end
+
+  def narration_text
+    [
+      title,
+      "Ingredients: #{ingredients.lines.map(&:strip).reject(&:blank?).join(', ')}.",
+      "Instructions: #{instruction_steps.join(' ')}"
+    ].join("\n")
+  end
 end

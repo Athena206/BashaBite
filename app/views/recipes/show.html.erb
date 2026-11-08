@@ -2,6 +2,11 @@
   <%= link_to "← All recipes", root_path, class: "back-link" %>
   <p class="eyebrow"><%= @recipe.cuisine.upcase %> RECIPE</p>
   <h1><%= @recipe.title %></h1>
+  <div class="audio-player">
+    <button class="listen-button" type="button" data-audio-play disabled>Preparing voice…</button>
+    <audio controls preload="none" data-gnani-audio data-audio-url="<%= audio_recipe_path(@recipe) %>">Your browser does not support audio playback.</audio>
+    <p class="audio-status" data-audio-status aria-live="polite">Getting the spoken instructions ready…</p>
+  </div>
   <div class="recipe-columns">
     <div class="recipe-panel">
       <h3>Ingredients</h3>

@@ -1,4 +1,3 @@
-require "base64"
 require "faraday"
 require "faraday/multipart"
 require "json"
@@ -27,7 +26,8 @@ class GnaniVoice
             upload.original_filename
           ),
         model: ENV.fetch("GNANI_STT_MODEL", "prisma-v3.0"),
-        language_code: ENV.fetch("GNANI_STT_LANGUAGE_CODE", "indic-auto")
+          language_code: ENV.fetch("GNANI_STT_LANGUAGE_CODE", "en-IN,hi-IN"),
+          format: ENV.fetch("GNANI_STT_FORMAT", "transliterate")
       }
     end
     payload = parse_response(response, "speech recognition")
@@ -48,10 +48,20 @@ class GnaniVoice
         text: text,
         model: ENV.fetch("GNANI_TTS_MODEL", "timbre-v3.0"),
         voice: ENV.fetch("GNANI_TTS_VOICE", "Shivani"),
-        language: ENV.fetch("GNANI_TTS_LANGUAGE", "auto")
+        language: ENV.fetch("GNANI_TTS_LANGUAGE", "auto"),
+        audio_config: {
+          sample_rate: 24000,
+          num_channels: 1,
+          sample_width: 2,
+          encoding: "linear_pcm",
+          container: "wav"
+        }
       }.to_json
     end
-    parse_audio_response(response, "speech generation")
+    audio = parse_audio_response(response, "speech generation")
+    content_type = response.headers["content-type"].to_s.split(";").first.presence
+    content_type = "audio/wav" if content_type.blank? || content_type == "application/octet-stream"
+    { body: audio, content_type: content_type }
   end
 
   private
@@ -108,9 +118,40 @@ class GnaniVoice
   def parse_audio_response(response, operation)
     raise_response_error(response, operation)
     raise Error, "Gnani AI #{operation} returned an empty audio response." if response.body.blank?
+    content_type = response.headers["content-type"].to_s.split(";").first
+    unless content_type.blank? || content_type.start_with?("audio/") || content_type == "application/octet-stream"
+      raise Error, "Gnani AI #{operation} returned #{content_type} instead of binary audio."
+    end
+    unless response.body.bytesize >= 12 && response.body.byteslice(0, 4) == "RIFF" && response.body.byteslice(8, 4) == "WAVE"
+      raise Error, "Gnani AI #{operation} returned invalid WAV audio."
+    end
 
-    content_type = response.headers["content-type"].to_s.split(";").first.presence || "audio/wav"
-    { data_uri: "data:#{content_type};base64,#{Base64.strict_encode64(response.body)}" }
+    wav = response.body.dup.force_encoding(Encoding::BINARY)
+    wav[4, 4] = [wav.bytesize - 8].pack("V")
+
+    offset = 12
+    data_chunk_found = false
+    while offset + 8 <= wav.bytesize
+      chunk_id = wav.byteslice(offset, 4)
+      chunk_size = wav.byteslice(offset + 4, 4).unpack1("V")
+      chunk_data_offset = offset + 8
+      remaining_bytes = wav.bytesize - chunk_data_offset
+
+      if chunk_id == "data"
+        data_size = [chunk_size, remaining_bytes].min
+        wav[offset + 4, 4] = [data_size].pack("V")
+        data_chunk_found = true
+        break
+      end
+
+      raise Error, "Gnani AI #{operation} returned an invalid WAV chunk." if chunk_size > remaining_bytes
+
+      offset = chunk_data_offset + chunk_size + (chunk_size.odd? ? 1 : 0)
+    end
+
+    raise Error, "Gnani AI #{operation} returned WAV audio without a data chunk." unless data_chunk_found
+
+    wav
   end
 
   def raise_response_error(response, operation)

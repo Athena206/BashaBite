@@ -1,5 +1,90 @@
 const form = document.getElementById("voice-form");
 
+document.querySelectorAll("[data-gnani-audio]").forEach((player) => {
+  const container = player.closest(".audio-player");
+  const status = container.querySelector("[data-audio-status]");
+  const playButton = container.querySelector("[data-audio-play]");
+  let objectUrl;
+
+  const loadAudio = fetch(player.dataset.audioUrl)
+    .then((response) => {
+      if (!response.ok) {
+        return response.text().then((message) => {
+          throw new Error(message || "Could not load spoken instructions.");
+        });
+      }
+      return response.blob();
+    })
+    .then((blob) => {
+      if (!blob.size) throw new Error("Gnani returned empty audio.");
+      objectUrl = URL.createObjectURL(blob);
+      player.src = objectUrl;
+      player.load();
+      playButton.disabled = false;
+      playButton.textContent = "Listen to recipe";
+      status.textContent = "Your recipe instructions are ready.";
+      return player;
+    })
+    .catch((error) => {
+      status.textContent = error.message;
+      status.classList.add("voice-error");
+      playButton.textContent = "Voice unavailable";
+      throw error;
+    });
+
+  loadAudio
+    .then(() => player.play())
+    .then(() => {
+      status.textContent = "Reading the recipe instructions aloud…";
+    })
+    .catch((error) => {
+      if (error.name === "NotAllowedError") {
+        status.textContent = "Tap “Listen to recipe” to hear the instructions.";
+      } else if (objectUrl) {
+        status.textContent = `Could not start the narration: ${error.message}`;
+        status.classList.add("voice-error");
+      }
+    });
+
+  playButton.addEventListener("click", async () => {
+    if (!objectUrl) return;
+
+    try {
+      if (player.paused) {
+        await player.play();
+      } else {
+        player.pause();
+      }
+    } catch (error) {
+      status.textContent = error.message;
+      status.classList.add("voice-error");
+    }
+  });
+
+  player.addEventListener("play", () => {
+    playButton.textContent = "Pause narration";
+    status.textContent = "Reading the recipe instructions aloud…";
+  });
+  player.addEventListener("pause", () => {
+    playButton.textContent = "Listen to recipe";
+    if (!player.ended) status.textContent = "Narration paused.";
+  });
+  player.addEventListener("ended", () => {
+    playButton.textContent = "Listen again";
+    status.textContent = "Recipe narration complete.";
+  });
+  player.addEventListener("error", () => {
+    status.textContent = "The audio could not be played. Tap to try loading it again.";
+    status.classList.add("voice-error");
+  });
+
+  window.addEventListener("pagehide", () => {
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+  }, { once: true });
+
+  loadAudio.catch(() => {});
+});
+
 if (form) {
   const recordButton = document.getElementById("record-button");
   const recordStatus = document.getElementById("record-status");

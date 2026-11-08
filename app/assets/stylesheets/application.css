@@ -52,6 +52,12 @@ h1, h2, h3, p { margin-top: 0; }
 .section-heading .eyebrow { margin-bottom: 8px; }
 .section-heading h2 { margin: 0; font: 600 31px "Playfair Display", serif; }
 .section-heading audio { width: min(330px, 100%); height: 42px; }
+.audio-player { display: grid; gap: 8px; justify-items: end; min-width: min(330px, 100%); }
+.listen-button { padding: 10px 16px; border: 0; border-radius: 8px; background: var(--green); color: white; font: 600 12px "DM Sans", sans-serif; cursor: pointer; }
+.listen-button:hover:not(:disabled) { background: var(--green-dark); }
+.listen-button:disabled { background: #aab3a9; cursor: wait; }
+.audio-player audio { width: min(330px, 100%); height: 42px; }
+.audio-status { margin: 0; color: var(--muted); font-size: 11px; }
 .recipe-columns { display: grid; grid-template-columns: .8fr 1.2fr; gap: 18px; }
 .recipe-panel { padding: 26px; border: 1px solid var(--line); border-radius: 13px; background: var(--paper); }
 .recipe-panel h3 { margin: 0 0 20px; font: 600 20px "Playfair Display", serif; }
