@@ -1,6 +1,6 @@
-# BhashaBite
+# Rasoi Tale
 
-BhashaBite is a Ruby on Rails recipe assistant for hands-free cooking. Ask a question by recording or uploading audio; the app transcribes it, finds a matching recipe, displays the ingredients and steps, and requests a spoken version of the instructions.
+Rasoi Tale is a Ruby on Rails recipe assistant for hands-free cooking and simple text search. Search by dish, cuisine, ingredient, or instruction, or ask by recording/uploading audio; the app finds a recipe, displays the ingredients and steps, and reads it aloud.
 
 ## Features
 
@@ -8,6 +8,7 @@ BhashaBite is a Ruby on Rails recipe assistant for hands-free cooking. Ask a que
 - Send the question to Gnani AI Prisma (speech-to-text), then match recognized words against recipe names and ingredients.
 - Display recipe ingredients and instructions, and narrate the title, ingredients, and steps with Gnani AI Timbre (text-to-speech). Playback starts automatically when the browser permits, with a visible listen/pause control as a fallback. Audio is fetched from Rails as binary; the Gnani key stays server-side.
 - Browse recipes grouped into Chinese, North Indian, South Indian, Bengali, Gujarati, and Marathi cuisine sections.
+- Browse photo-forward recipe cards with playful cuisine icons and a warm, responsive visual design.
 - Surface missing configuration, API, upload, and recipe-match errors instead of choosing a random recipe.
 
 ## Requirements

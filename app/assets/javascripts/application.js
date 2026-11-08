@@ -1,5 +1,9 @@
 const form = document.getElementById("voice-form");
 
+document.querySelectorAll(".recipe-image, .featured-food-image").forEach((image) => {
+  image.addEventListener("error", () => image.classList.add("image-unavailable"), { once: true });
+});
+
 document.querySelectorAll("[data-gnani-audio]").forEach((player) => {
   const container = player.closest(".audio-player");
   const status = container.querySelector("[data-audio-status]");

@@ -1,12 +1,15 @@
 <section class="hero">
   <div class="hero-copy">
-    <p class="eyebrow">YOUR KITCHEN COMPANION</p>
-    <h1>What are we<br><span>cooking today?</span></h1>
-    <p class="hero-description">Ask for a recipe in your own words. We’ll find the steps and read them aloud while you cook.</p>
+    <p class="eyebrow hero-kicker"><span aria-hidden="true">✿</span> YOUR KITCHEN, YOUR VIBE</p>
+    <h1>Big cravings.<br><span>Little effort.</span></h1>
+    <p class="hero-description">Type it, say it, crave it. Find a recipe that feels like home, then cook along with a little help from Rasoi Tale.</p>
+    <div class="hero-perks" aria-label="What Rasoi Tale can do">
+      <span>🎙️ Ask by voice</span><span>🔎 Search recipes</span><span>🎧 Cook along</span>
+    </div>
   </div>
   <div class="voice-card">
     <div class="voice-card-heading">
-      <span class="eyebrow">ASK BASHABITE</span>
+      <span class="eyebrow">ASK YOUR FOOD BESTIE</span>
       <span class="live-dot" aria-hidden="true"></span>
     </div>
     <%= form_with url: voice_assistant_path, multipart: true, class: "voice-form", id: "voice-form" do %>
@@ -32,12 +35,25 @@
   </div>
 </section>
 
+<section class="search-section" aria-labelledby="recipe-search-heading">
+  <div class="search-copy">
+    <p class="eyebrow">KNOW WHAT YOU’RE CRAVING?</p>
+    <h2 id="recipe-search-heading">Find your next <span>favorite.</span></h2>
+    <p>Search by dish, cuisine, or an ingredient you have at home.</p>
+  </div>
+  <%= form_with url: root_path, method: :get, class: "recipe-search", role: "search" do |form| %>
+    <span class="search-icon" aria-hidden="true">⌕</span>
+    <%= form.search_field :q, value: @search_query, placeholder: "Try paneer, noodles, lentils…", aria: { label: "Search recipes by dish, cuisine, ingredient, or instructions" }, autocomplete: "off" %>
+    <%= form.submit "Search recipes" %>
+  <% end %>
+</section>
+
 <% if @recipe %>
   <section class="result-section" aria-live="polite">
     <div class="section-heading">
       <div>
-        <p class="eyebrow">YOUR RECIPE</p>
-        <h2><%= @recipe.title %></h2>
+        <p class="eyebrow"><%= @recipe.cuisine.upcase %> COMING RIGHT UP <span aria-hidden="true"><%= @recipe.cuisine_emoji %></span></p>
+        <h2><%= @recipe.title %> <span aria-hidden="true">✨</span></h2>
       </div>
       <div class="audio-player">
         <button class="listen-button" type="button" data-audio-play disabled>Preparing voice…</button>
@@ -45,9 +61,13 @@
         <p class="audio-status" data-audio-status aria-live="polite">Getting the spoken instructions ready…</p>
       </div>
     </div>
+    <div class="featured-food">
+      <%= image_tag @recipe.food_image_url, alt: "#{@recipe.title} food inspiration", class: "featured-food-image", loading: "lazy", decoding: "async" %>
+      <span class="image-sticker" aria-hidden="true"><%= @recipe.cuisine_emoji %> made with love</span>
+    </div>
     <div class="recipe-columns">
       <div class="recipe-panel">
-        <h3>Ingredients</h3>
+        <h3><span aria-hidden="true">🛒</span> The good stuff</h3>
         <ul class="ingredient-list">
           <% @recipe.ingredients.lines.map(&:strip).reject(&:blank?).each do |ingredient| %>
             <li><span class="ingredient-dot"></span><%= ingredient %></li>
@@ -55,7 +75,7 @@
         </ul>
       </div>
       <div class="recipe-panel">
-        <h3>Let’s make it</h3>
+        <h3><span aria-hidden="true">👩‍🍳</span> Let’s make magic</h3>
         <ol class="instruction-list">
           <% @recipe.instruction_steps.each do |step| %>
             <li><span><%= step %></span></li>
@@ -69,36 +89,51 @@
 <section class="collection-section">
   <div class="section-heading">
     <div>
-      <p class="eyebrow">A LITTLE INSPIRATION</p>
-      <h2>Explore by cuisine</h2>
+      <p class="eyebrow"><%= @search_query.present? ? "YOUR SEARCH RESULTS" : "YOUR NEXT FOOD OBSESSION 💌" %></p>
+      <h2><%= @search_query.present? ? "Recipes for “#{@search_query}”" : "Pick your mood" %></h2>
     </div>
-    <span class="recipe-count"><%= pluralize(@recipes.size, "recipe") %></span>
+    <span class="recipe-count"><%= pluralize(@recipes.size, "recipe") %><%= " found" if @search_query.present? %></span>
   </div>
   <% if @recipes.any? %>
     <nav class="cuisine-nav" aria-label="Recipe cuisines">
       <% @recipes_by_cuisine.each_key do |cuisine| %>
-        <%= link_to cuisine, "##{cuisine.parameterize}-recipes" %>
+        <%= link_to "#{Recipe::CUISINE_EMOJIS.fetch(cuisine, '🍽️')} #{cuisine}", "##{cuisine.parameterize}-recipes" %>
       <% end %>
     </nav>
     <% @recipes_by_cuisine.each do |cuisine, recipes| %>
       <section class="cuisine-section" id="<%= cuisine.parameterize %>-recipes">
         <div class="cuisine-heading">
-          <h3><%= cuisine %></h3>
-          <span><%= pluralize(recipes.size, "dish") %></span>
+          <h3><span aria-hidden="true"><%= Recipe::CUISINE_EMOJIS.fetch(cuisine, "🍽️") %></span> <%= cuisine %></h3>
+          <span><%= pluralize(recipes.size, "dish") %> to fall for ✨</span>
         </div>
         <div class="recipe-grid">
           <% recipes.each do |recipe| %>
             <article class="recipe-card">
-              <div class="recipe-card-top"><span class="dish-icon" aria-hidden="true">✳</span><span class="card-label"><%= recipe.cuisine.upcase %></span></div>
-              <h3><%= link_to recipe.title, recipe_path(recipe) %></h3>
-              <p><%= truncate(recipe.ingredients.lines.map(&:strip).reject(&:blank?).join(" · "), length: 110) %></p>
-              <%= link_to "View recipe", recipe_path(recipe), class: "card-link" %>
+              <%= link_to recipe_path(recipe), class: "recipe-image-link", aria: { label: "See #{recipe.title} recipe" } do %>
+                <%= image_tag recipe.food_image_url, alt: "#{recipe.title} food inspiration", class: "recipe-image", loading: "lazy", decoding: "async" %>
+                <span class="image-emoji" aria-hidden="true"><%= recipe.cuisine_emoji %></span>
+              <% end %>
+              <div class="recipe-card-content">
+                <div class="recipe-card-top"><span class="dish-icon" aria-hidden="true">✦</span><span class="card-label"><%= recipe.cuisine.upcase %></span></div>
+                <h3><%= link_to recipe.title, recipe_path(recipe) %></h3>
+                <p><%= truncate(recipe.ingredients.lines.map(&:strip).reject(&:blank?).join(" · "), length: 110) %></p>
+                <%= link_to "Get the recipe ↗", recipe_path(recipe), class: "card-link" %>
+              </div>
             </article>
           <% end %>
         </div>
       </section>
     <% end %>
   <% else %>
-    <p class="empty-state">Recipes will appear here once they’re added to the recipe box.</p>
+    <% if @search_query.present? %>
+      <div class="empty-state search-empty">
+        <span aria-hidden="true">🍽️</span>
+        <h3>No recipes found just yet</h3>
+        <p>Try another dish, cuisine, or ingredient—or browse all our recipes.</p>
+        <%= link_to "Show all recipes", root_path, class: "card-link" %>
+      </div>
+    <% else %>
+      <p class="empty-state">Recipes will appear here once they’re added to the recipe box.</p>
+    <% end %>
   <% end %>
 </section>

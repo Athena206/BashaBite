@@ -5,7 +5,10 @@ class RecipesController < ApplicationController
   MAX_AUDIO_SIZE = 25.megabytes
 
   def index
-    @recipes = Recipe.alphabetical
+    @search_query = params[:q].to_s.strip
+    @recipes = Recipe.all
+    @recipes = @recipes.search_text(@search_query) if @search_query.present?
+    @recipes = @recipes.alphabetical
     set_recipes_by_cuisine
   end
 

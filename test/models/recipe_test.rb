@@ -35,4 +35,25 @@ class RecipeTest < ActiveSupport::TestCase
       recipe.narration_text
     )
   end
+
+  test "provides cuisine-specific food imagery and icons" do
+    recipe = Recipe.new(cuisine: "South Indian")
+
+    assert_includes recipe.food_image_url, "images.unsplash.com"
+    assert_includes recipe.food_image_url, Recipe::CUISINE_IMAGES["South Indian"]
+    assert_equal "🥥", recipe.cuisine_emoji
+  end
+
+  test "searches recipe titles, cuisines, ingredients, and instructions case insensitively" do
+    recipe = Recipe.create!(
+      title: "Paneer Tikka",
+      cuisine: "North Indian",
+      ingredients: "Paneer, yogurt, spices",
+      instructions: "Grill until golden."
+    )
+
+    assert_equal [recipe], Recipe.search_text("PANEER").to_a
+    assert_equal [recipe], Recipe.search_text("north indian").to_a
+    assert_equal [recipe], Recipe.search_text("golden").to_a
+  end
 end

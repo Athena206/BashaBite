@@ -1,7 +1,11 @@
 <section class="detail-page">
   <%= link_to "← All recipes", root_path, class: "back-link" %>
-  <p class="eyebrow"><%= @recipe.cuisine.upcase %> RECIPE</p>
-  <h1><%= @recipe.title %></h1>
+  <p class="eyebrow"><%= @recipe.cuisine_emoji %> <%= @recipe.cuisine.upcase %> RECIPE</p>
+  <h1><%= @recipe.title %> <span aria-hidden="true">✨</span></h1>
+  <div class="featured-food detail-food">
+    <%= image_tag @recipe.food_image_url, alt: "#{@recipe.title} food inspiration", class: "featured-food-image", decoding: "async" %>
+    <span class="image-sticker" aria-hidden="true"><%= @recipe.cuisine_emoji %> made with love</span>
+  </div>
   <div class="audio-player">
     <button class="listen-button" type="button" data-audio-play disabled>Preparing voice…</button>
     <audio controls preload="none" data-gnani-audio data-audio-url="<%= audio_recipe_path(@recipe) %>">Your browser does not support audio playback.</audio>
@@ -9,7 +13,7 @@
   </div>
   <div class="recipe-columns">
     <div class="recipe-panel">
-      <h3>Ingredients</h3>
+      <h3><span aria-hidden="true">🛒</span> The good stuff</h3>
       <ul class="ingredient-list">
         <% @recipe.ingredients.lines.map(&:strip).reject(&:blank?).each do |ingredient| %>
           <li><span class="ingredient-dot"></span><%= ingredient %></li>
@@ -17,7 +21,7 @@
       </ul>
     </div>
     <div class="recipe-panel">
-      <h3>Let’s make it</h3>
+      <h3><span aria-hidden="true">👩‍🍳</span> Let’s make magic</h3>
       <ol class="instruction-list">
         <% @recipe.instruction_steps.each do |step| %>
           <li><span><%= step %></span></li>
