@@ -18,7 +18,7 @@ body { margin: 0; background: var(--cream); color: var(--ink); }
 a { color: inherit; }
 .site-header { height: 78px; padding: 0 max(6vw, calc((100vw - 1180px) / 2)); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(37, 51, 43, .08); }
 .brand { display: inline-flex; gap: 10px; align-items: center; text-decoration: none; font-weight: 700; font-size: 19px; letter-spacing: -.5px; }
-.brand-mark { width: 34px; height: 34px; display: grid; place-items: center; color: white; border-radius: 12px 12px 12px 4px; background: var(--green); font-family: "Playfair Display", serif; font-size: 20px; }
+.brand-mark { width: 34px; height: 34px; display: grid; place-items: center; color: white; border-radius: 12px 12px 12px 4px; background: var(--green); font-family: "Playfair Display", serif; font-size: 18px; }
 .brand-accent { color: var(--green); }
 .header-note, .site-footer { color: var(--muted); font-size: 12px; }
 main { max-width: 1180px; margin: auto; padding: 0 28px; }
@@ -32,7 +32,7 @@ h1, h2, h3, p { margin-top: 0; }
 .voice-card-heading { display: flex; justify-content: space-between; align-items: center; }
 .voice-card-heading .eyebrow { margin: 0; }
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #75a57b; box-shadow: 0 0 0 4px #75a57b20; }
-.record-button { display: grid; place-items: center; width: 78px; height: 78px; margin: 30px auto 14px; border: 0; border-radius: 50%; background: var(--green); color: white; cursor: pointer; box-shadow: 0 0 0 9px #37634812; transition: transform .18s, background .18s; }
+.record-button { display: grid; place-items: center; width: 78px; height: 78px; margin: 30px auto 14px; border: 0; border-radius: 50%; background: var(--green); color: white; cursor: pointer; box-shadow: 0 8px 18px #37634830; transition: .2s; }
 .record-button:hover { transform: scale(1.05); background: var(--green-dark); }
 .record-button.is-recording { background: #c65e4e; animation: pulse 1.2s infinite; }
 .mic-icon { font-size: 28px; }
@@ -52,6 +52,9 @@ h1, h2, h3, p { margin-top: 0; }
 .section-heading .eyebrow { margin-bottom: 8px; }
 .section-heading h2 { margin: 0; font: 600 31px "Playfair Display", serif; }
 .section-heading audio { width: min(330px, 100%); height: 42px; }
+.recipe-audio-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.recipe-audio-controls .submit-button { margin: 0; }
+.recipe-audio-controls .voice-error { flex-basis: 100%; }
 .recipe-columns { display: grid; grid-template-columns: .8fr 1.2fr; gap: 18px; }
 .recipe-panel { padding: 26px; border: 1px solid var(--line); border-radius: 13px; background: var(--paper); }
 .recipe-panel h3 { margin: 0 0 20px; font: 600 20px "Playfair Display", serif; }

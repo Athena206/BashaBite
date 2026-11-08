@@ -10,7 +10,6 @@ if (form) {
   let recorder;
   let audioChunks = [];
   let timerInterval;
-  let recordingSeconds = 0;
 
   uploadButton.addEventListener("click", () => audioInput.click());
   audioInput.addEventListener("change", () => {
@@ -52,7 +51,7 @@ if (form) {
         timer.textContent = "Tap “Find my recipe” to continue";
       });
       recorder.start();
-      recordingSeconds = 0;
+      let recordingSeconds = 0;
       recordButton.classList.add("is-recording");
       recordButton.setAttribute("aria-label", "Stop recording");
       recordStatus.textContent = "Listening… tap the button to finish";
@@ -72,5 +71,52 @@ if (form) {
   form.addEventListener("submit", () => {
     submitButton.disabled = true;
     submitButton.value = "Listening to your question…";
+  });
+}
+
+const playAudioButton = document.getElementById("play-audio-button");
+const audioPlayer = document.getElementById("recipe-audio-player");
+const audioError = document.getElementById("recipe-audio-error");
+let audioObjectUrl;
+
+if (playAudioButton && audioPlayer) {
+  playAudioButton.addEventListener("click", async () => {
+    playAudioButton.disabled = true;
+    playAudioButton.textContent = "Preparing audio…";
+    audioError.hidden = true;
+
+    try {
+      const response = await fetch(playAudioButton.dataset.audioUrl, {
+        method: "POST",
+        headers: { Accept: "audio/*" },
+        credentials: "same-origin"
+      });
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `Audio request failed (${response.status}).`);
+      }
+
+      const blob = await response.blob();
+      if (!blob.size || !blob.type.startsWith("audio/")) {
+        throw new Error("The speech service did not return playable audio.");
+      }
+
+      if (audioObjectUrl) URL.revokeObjectURL(audioObjectUrl);
+      audioObjectUrl = URL.createObjectURL(blob);
+      audioPlayer.src = audioObjectUrl;
+      audioPlayer.hidden = false;
+      audioPlayer.load();
+      playAudioButton.textContent = "Prepare spoken recipe again";
+    } catch (error) {
+      audioError.textContent = error.message || "Could not prepare recipe audio. Please try again.";
+      audioError.hidden = false;
+      playAudioButton.textContent = "Play spoken recipe";
+    } finally {
+      playAudioButton.disabled = false;
+    }
+  });
+
+  window.addEventListener("beforeunload", () => {
+    if (audioObjectUrl) URL.revokeObjectURL(audioObjectUrl);
   });
 }

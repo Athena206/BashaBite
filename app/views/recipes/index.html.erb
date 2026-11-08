@@ -39,11 +39,11 @@
         <p class="eyebrow">YOUR RECIPE</p>
         <h2><%= @recipe.title %></h2>
       </div>
-      <% if @audio&.dig(:url) %>
-        <audio controls preload="none" src="<%= @audio[:url] %>">Your browser does not support audio playback.</audio>
-      <% elsif @audio&.dig(:data_uri) %>
-        <audio controls preload="none" src="<%= @audio[:data_uri] %>">Your browser does not support audio playback.</audio>
-      <% end %>
+      <div class="recipe-audio-controls">
+        <button class="submit-button" type="button" id="play-audio-button" data-audio-url="<%= recipe_audio_path(@recipe) %>">Play spoken recipe</button>
+        <audio id="recipe-audio-player" controls preload="none" hidden>Your browser does not support audio playback.</audio>
+        <p class="voice-error" id="recipe-audio-error" role="alert" hidden></p>
+      </div>
     </div>
     <div class="recipe-columns">
       <div class="recipe-panel">

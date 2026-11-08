@@ -35,6 +35,29 @@ class GnaniVoice
     transcript
   end
 
+  # Request the TTS response as raw audio bytes for direct browser playback.
+  def synthesize_audio(text)
+    endpoint = endpoint_url(@tts_endpoint, "GNANI_TTS_ENDPOINT")
+    required_api_key
+    response = request(endpoint, "speech generation") do |request|
+      request.headers["Authorization"] = "Bearer #{required_api_key}"
+      request.headers["Content-Type"] = "application/json"
+      request.headers["Accept"] = "audio/*"
+      request.body = { text: text }.to_json
+    end
+
+    unless response.success?
+      raise Error, "Gnani AI speech generation request failed (HTTP #{response.status})."
+    end
+
+    content_type = response.headers["content-type"].to_s.split(";").first
+    unless content_type.start_with?("audio/") && response.body.present?
+      raise Error, "Gnani AI speech generation did not return binary audio data."
+    end
+
+    { body: response.body, content_type: content_type }
+  end
+
   def synthesize(text)
     endpoint = endpoint_url(@tts_endpoint, "GNANI_TTS_ENDPOINT")
     required_api_key
