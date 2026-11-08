@@ -29,9 +29,16 @@ if (form) {
       return;
     }
 
+    const mimeType = ["audio/mp4", "audio/ogg;codecs=opus", "audio/aac"]
+      .find((type) => MediaRecorder.isTypeSupported(type));
+    if (!mimeType) {
+      recordStatus.textContent = "This browser cannot record an API-supported audio format. Upload a WAV, MP3, OGG, FLAC, AAC, or M4A file instead.";
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      recorder = new MediaRecorder(stream);
+      recorder = new MediaRecorder(stream, { mimeType });
       audioChunks = [];
       recorder.addEventListener("dataavailable", (event) => {
         if (event.data.size) audioChunks.push(event.data);
@@ -40,7 +47,7 @@ if (form) {
         clearInterval(timerInterval);
         stream.getTracks().forEach((track) => track.stop());
         const audio = new Blob(audioChunks, { type: recorder.mimeType || "audio/webm" });
-        const extension = audio.type.includes("mp4") ? "m4a" : "webm";
+        const extension = audio.type.includes("mp4") ? "m4a" : audio.type.includes("ogg") ? "ogg" : "aac";
         const file = new File([audio], `bhashabite-question.${extension}`, { type: audio.type });
         const transfer = new DataTransfer();
         transfer.items.add(file);
@@ -60,7 +67,7 @@ if (form) {
       timerInterval = setInterval(() => {
         recordingSeconds += 1;
         timer.textContent = `${String(Math.floor(recordingSeconds / 60)).padStart(2, "0")}:${String(recordingSeconds % 60).padStart(2, "0")}`;
-        if (recordingSeconds >= 120) recorder.stop();
+        if (recordingSeconds >= 30) recorder.stop();
       }, 1000);
     } catch (error) {
       recordStatus.textContent = error.name === "NotAllowedError"

@@ -1,6 +1,6 @@
 <section class="detail-page">
   <%= link_to "← All recipes", root_path, class: "back-link" %>
-  <p class="eyebrow">FROM THE RECIPE BOX</p>
+  <p class="eyebrow"><%= @recipe.cuisine.upcase %> RECIPE</p>
   <h1><%= @recipe.title %></h1>
   <div class="recipe-columns">
     <div class="recipe-panel">

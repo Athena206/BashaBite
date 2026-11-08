@@ -1,5 +1,8 @@
 class Recipe < ApplicationRecord
+  CUISINES = ["Chinese", "North Indian", "South Indian", "Bengali", "Gujarati", "Marathi", "Other"].freeze
+
   validates :title, :ingredients, :instructions, presence: true
+  validates :cuisine, inclusion: { in: CUISINES }
 
   scope :alphabetical, -> { order(:title) }
 

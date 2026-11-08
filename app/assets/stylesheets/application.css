@@ -63,6 +63,13 @@ h1, h2, h3, p { margin-top: 0; }
 .instruction-list li { display: flex; gap: 14px; padding: 0 0 17px; color: #576057; font-size: 13px; line-height: 1.7; counter-increment: steps; }
 .instruction-list li::before { content: counter(steps, decimal-leading-zero); flex: 0 0 28px; color: var(--green); font-weight: 700; font-size: 11px; }
 .recipe-count { color: var(--muted); font-size: 12px; }
+.cuisine-nav { display: flex; flex-wrap: wrap; gap: 9px; margin: 0 0 30px; }
+.cuisine-nav a { padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--green); background: var(--paper); font-size: 11px; font-weight: 600; text-decoration: none; }
+.cuisine-nav a:hover, .cuisine-nav a:focus-visible { border-color: var(--green); }
+.cuisine-section { margin-top: 34px; scroll-margin-top: 24px; }
+.cuisine-heading { display: flex; align-items: baseline; gap: 12px; margin-bottom: 15px; }
+.cuisine-heading h3 { margin: 0; font: 600 24px "Playfair Display", serif; }
+.cuisine-heading span { color: var(--muted); font-size: 11px; }
 .recipe-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .recipe-card { padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
 .recipe-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }

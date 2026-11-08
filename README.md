@@ -7,7 +7,7 @@ BhashaBite is a Ruby on Rails recipe assistant for hands-free cooking. Ask a que
 - Record audio in the browser or upload an audio file.
 - Send the question to Gnani AI Prisma (speech-to-text), then match recognized words against recipe names and ingredients.
 - Display recipe ingredients and instructions, and request audio from Gnani AI Timbre (text-to-speech).
-- Browse six sample regional recipes: Aloo Posto, Masala Dosa, Gujarati Kadhi, Poha, Rajma, and Sambar.
+- Browse recipes grouped into Chinese, North Indian, South Indian, Bengali, Gujarati, and Marathi cuisine sections.
 - Surface missing configuration, API, upload, and recipe-match errors instead of choosing a random recipe.
 
 ## Requirements
@@ -26,7 +26,7 @@ ruby .\bin\rails db:seed
 ruby .\bin\rails server
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Recipes can be browsed without Gnani AI credentials; voice requests require the configuration below.
+Open [http://localhost:3000](http://localhost:3000). Recipes can be browsed without Gnani AI credentials; voice requests require the configuration below. The seed data provides at least three dishes in each cuisine section. Add recipes in `db/seeds.rb`, assign each a cuisine, then run `ruby .\bin\rails db:seed`.
 
 For macOS/Linux, run the same Rails commands using `bin/rails <command>`.
 
@@ -39,7 +39,7 @@ For example:
 ```dotenv
 GNANI_API_KEY=your-real-api-key
 GNANI_STT_ENDPOINT=https://api.vachana.ai/stt/v3
-GNANI_TTS_ENDPOINT=https://your-documented-timbre-endpoint
+GNANI_TTS_ENDPOINT=https://api.vachana.ai/api/v1/tts/inference
 ```
 
 After saving `.env`, stop Rails with `Ctrl+C` and start it again. The server will load the values from the project file even when launched from a different terminal. In production, configure these as deployment environment variables instead.
@@ -49,15 +49,19 @@ After saving `.env`, stop Rails with `Ctrl+C` and start it again. The server wil
 | `GNANI_API_KEY` | Yes | Gnani AI API key |
 | `GNANI_STT_ENDPOINT` | Yes | Full Prisma speech-to-text endpoint URL |
 | `GNANI_TTS_ENDPOINT` | Yes | Full Timbre text-to-speech endpoint URL |
-| `GNANI_STT_FILE_FIELD` | No | Multipart audio field name; defaults to `file` |
+| `GNANI_STT_FILE_FIELD` | No | Multipart audio field name; defaults to `audio_file` |
+| `GNANI_STT_MODEL` | No | Prisma model; defaults to `prisma-v3.0` |
+| `GNANI_STT_LANGUAGE_CODE` | No | Language hint; defaults to `indic-auto` |
 | `GNANI_STT_TRANSCRIPT_FIELD` | No | STT JSON response field containing the transcript; defaults to `transcript` |
-| `GNANI_TTS_AUDIO_URL_FIELD` | No | TTS JSON field containing a playable audio URL; defaults to `audio_url` |
-| `GNANI_TTS_AUDIO_BASE64_FIELD` | No | TTS JSON field containing base64 audio; defaults to `audio_base64` |
-| `GNANI_TTS_CONTENT_TYPE_FIELD` | No | TTS JSON field containing the audio MIME type; defaults to `content_type` |
+| `GNANI_TTS_MODEL` | No | Timbre model; defaults to `timbre-v3.0` |
+| `GNANI_TTS_VOICE` | No | Timbre voice; defaults to `Shivani` |
+| `GNANI_TTS_LANGUAGE` | No | TTS language or `auto`; defaults to `auto` |
 
-Set each endpoint variable to only the endpoint URL, for example `https://api.example.com/path`. Do not include `POST`, `Content-Type`, or other headers in the endpoint value. The app sends STT audio as a multipart upload with a Bearer authorization header and sends TTS text as JSON (`{"text":"..."}`). It accepts a transcript string from STT and either an audio URL or base64 audio from TTS. Confirm the exact endpoint URLs, authentication method, multipart field, request payload, response fields, and supported formats in the Gnani AI documentation for your account. Adjust the field-name settings to match that documented API. The app deliberately does not assume undocumented endpoint URLs.
+For both speech-to-text and text-to-speech, the app sends the raw API key in the `X-API-Key-ID` header. STT uses multipart form fields `audio_file`, `model`, and `language_code`; the endpoint accepts clips up to 30 seconds. TTS sends JSON containing `text`, `model`, `voice`, and `language`, and receives raw WAV audio.
 
-The browser recorder needs microphone permission and a secure context: localhost works for development, while deployed sites should use HTTPS. Audio uploads are limited to 25 MB and supported formats are WebM, Ogg, WAV, MP3, AAC, and MP4.
+Use only endpoint URLs in the environment variables; do not include HTTP methods or headers. The STT documentation lists WAV, MP3, OGG, FLAC, AAC, and M4A, with a maximum clip duration of 30 seconds. A `403` `SCOPE_NOT_ALLOWED` response means the API key lacks permission for that service; ask Gnani to enable STT and/or TTS access for the key.
+
+The browser recorder needs microphone permission and a secure context: localhost works for development, while deployed sites should use HTTPS. Audio uploads are limited to 25 MB and must be WAV, MP3, OGG, FLAC, AAC, or M4A. The recorder stops at the documented 30-second STT limit.
 
 ## Tests
 

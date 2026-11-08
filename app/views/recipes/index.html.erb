@@ -10,7 +10,7 @@
       <span class="live-dot" aria-hidden="true"></span>
     </div>
     <%= form_with url: voice_assistant_path, multipart: true, class: "voice-form", id: "voice-form" do %>
-      <%= file_field_tag :audio_file, accept: "audio/*", class: "visually-hidden", id: "audio-file" %>
+      <%= file_field_tag :audio_file, accept: "audio/wav,audio/mpeg,audio/ogg,audio/flac,audio/aac,audio/mp4,audio/x-m4a", class: "visually-hidden", id: "audio-file" %>
       <button class="record-button" type="button" id="record-button" aria-label="Start recording">
         <span class="mic-icon" aria-hidden="true">🎙</span>
       </button>
@@ -70,21 +70,34 @@
   <div class="section-heading">
     <div>
       <p class="eyebrow">A LITTLE INSPIRATION</p>
-      <h2>From our recipe box</h2>
+      <h2>Explore by cuisine</h2>
     </div>
     <span class="recipe-count"><%= pluralize(@recipes.size, "recipe") %></span>
   </div>
   <% if @recipes.any? %>
-    <div class="recipe-grid">
-      <% @recipes.each do |recipe| %>
-        <article class="recipe-card">
-          <div class="recipe-card-top"><span class="dish-icon" aria-hidden="true">✳</span><span class="card-label">REGIONAL FAVORITE</span></div>
-          <h3><%= link_to recipe.title, recipe_path(recipe) %></h3>
-          <p><%= truncate(recipe.ingredients.lines.map(&:strip).reject(&:blank?).join(" · "), length: 110) %></p>
-          <%= link_to "View recipe", recipe_path(recipe), class: "card-link" %>
-        </article>
+    <nav class="cuisine-nav" aria-label="Recipe cuisines">
+      <% @recipes_by_cuisine.each_key do |cuisine| %>
+        <%= link_to cuisine, "##{cuisine.parameterize}-recipes" %>
       <% end %>
-    </div>
+    </nav>
+    <% @recipes_by_cuisine.each do |cuisine, recipes| %>
+      <section class="cuisine-section" id="<%= cuisine.parameterize %>-recipes">
+        <div class="cuisine-heading">
+          <h3><%= cuisine %></h3>
+          <span><%= pluralize(recipes.size, "dish") %></span>
+        </div>
+        <div class="recipe-grid">
+          <% recipes.each do |recipe| %>
+            <article class="recipe-card">
+              <div class="recipe-card-top"><span class="dish-icon" aria-hidden="true">✳</span><span class="card-label"><%= recipe.cuisine.upcase %></span></div>
+              <h3><%= link_to recipe.title, recipe_path(recipe) %></h3>
+              <p><%= truncate(recipe.ingredients.lines.map(&:strip).reject(&:blank?).join(" · "), length: 110) %></p>
+              <%= link_to "View recipe", recipe_path(recipe), class: "card-link" %>
+            </article>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
   <% else %>
     <p class="empty-state">Recipes will appear here once they’re added to the recipe box.</p>
   <% end %>

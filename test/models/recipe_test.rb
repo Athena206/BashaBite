@@ -15,4 +15,11 @@ class RecipeTest < ActiveSupport::TestCase
 
     assert_equal ["First step.", "Second step."], recipe.instruction_steps
   end
+
+  test "requires a supported cuisine" do
+    recipe = Recipe.new(title: "Test", ingredients: "Rice", instructions: "Cook it.", cuisine: "Unknown")
+
+    assert_not recipe.valid?
+    assert_includes recipe.errors.attribute_names, :cuisine
+  end
 end
