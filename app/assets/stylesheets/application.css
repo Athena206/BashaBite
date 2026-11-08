@@ -49,6 +49,8 @@ h1, h2, h3, p { margin-top: 0; }
 .search-icon { color: #b7653d; font-size: 30px; line-height: 1; transform: rotate(-15deg); }
 .recipe-search input[type="search"] { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: 500 13px "DM Sans", sans-serif; }
 .recipe-search input[type="search"]::placeholder { color: #a59a91; }
+.diet-filter { display: flex; align-items: center; gap: 6px; padding-left: 10px; border-left: 1px solid #eee6e0; color: var(--muted); font-size: 11px; white-space: nowrap; }
+.diet-filter select { max-width: 122px; border: 0; outline: 0; background: transparent; color: var(--ink); font: 600 11px "DM Sans", sans-serif; cursor: pointer; }
 .recipe-search input[type="submit"] { padding: 12px 17px; border: 0; border-radius: 999px; background: var(--green); color: white; font: 700 11px "DM Sans", sans-serif; cursor: pointer; transition: background .16s, transform .16s; }
 .recipe-search input[type="submit"]:hover { transform: translateY(-1px); background: var(--green-dark); }
 .voice-card { min-height: 310px; padding: 28px 32px 24px; border: 1px solid rgba(255,255,255,.9); border-radius: 25px; background: rgba(255,254,250,.91); box-shadow: 0 22px 65px rgba(89, 68, 64, .12); text-align: center; }
@@ -115,6 +117,9 @@ h1, h2, h3, p { margin-top: 0; }
 .recipe-card-content { padding: 18px 20px 20px; }
 .recipe-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
 .dish-icon { color: #e28d78; font-size: 19px; }
+.diet-badge { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+.diet-veg { background: #e8f4e7; color: #397044; }
+.diet-non_veg { background: #fce9e5; color: #a94c3e; }
 .card-label { color: #8b9189; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
 .recipe-card h3 { margin: 0 0 8px; font: 700 21px "Playfair Display", serif; }
 .recipe-card h3 a { text-decoration: none; }
@@ -151,6 +156,8 @@ h1, h2, h3, p { margin-top: 0; }
   .search-section { grid-template-columns: 1fr; gap: 18px; margin-bottom: 39px; padding: 22px 18px; border-radius: 20px; }
   .recipe-search { min-height: 54px; gap: 7px; padding-left: 12px; }
   .recipe-search input[type="search"] { font-size: 12px; }
+  .diet-filter { gap: 3px; padding-left: 6px; font-size: 10px; }
+  .diet-filter select { max-width: 88px; font-size: 10px; }
   .recipe-search input[type="submit"] { padding: 11px 13px; font-size: 10px; }
   .voice-card { min-height: 290px; padding: 23px 19px; }
   .recipe-columns { grid-template-columns: 1fr; }

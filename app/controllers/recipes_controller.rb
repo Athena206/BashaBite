@@ -6,8 +6,10 @@ class RecipesController < ApplicationController
 
   def index
     @search_query = params[:q].to_s.strip
+    @diet_filter = params[:diet].presence_in(Recipe::DIET_TYPES)
     @recipes = Recipe.all
     @recipes = @recipes.search_text(@search_query) if @search_query.present?
+    @recipes = @recipes.where(diet_type: @diet_filter) if @diet_filter
     @recipes = @recipes.alphabetical
     set_recipes_by_cuisine
   end
@@ -37,10 +39,14 @@ class RecipesController < ApplicationController
     end
 
     @recipes = Recipe.alphabetical
+    @diet_filter = params[:diet].presence_in(Recipe::DIET_TYPES)
+    @recipes = @recipes.where(diet_type: @diet_filter) if @diet_filter
     set_recipes_by_cuisine
     render :index, status: :ok
   rescue GnaniVoice::Error => error
     @recipes = Recipe.alphabetical
+    @diet_filter = params[:diet].presence_in(Recipe::DIET_TYPES)
+    @recipes = @recipes.where(diet_type: @diet_filter) if @diet_filter
     set_recipes_by_cuisine
     @voice_error = error.message
     render :index, status: :unprocessable_entity

@@ -44,6 +44,10 @@
   <%= form_with url: root_path, method: :get, class: "recipe-search", role: "search" do |form| %>
     <span class="search-icon" aria-hidden="true">⌕</span>
     <%= form.search_field :q, value: @search_query, placeholder: "Try paneer, noodles, lentils…", aria: { label: "Search recipes by dish, cuisine, ingredient, or instructions" }, autocomplete: "off" %>
+    <label class="diet-filter">
+      <span>Show</span>
+      <%= form.select :diet, options_for_select([["All dishes", ""], ["🥬 Veg", "veg"], ["🍗 Non-veg", "non_veg"]], @diet_filter), aria: { label: "Filter recipes by dietary preference" } %>
+    </label>
     <%= form.submit "Search recipes" %>
   <% end %>
 </section>
@@ -114,7 +118,7 @@
                 <span class="image-emoji" aria-hidden="true"><%= recipe.cuisine_emoji %></span>
               <% end %>
               <div class="recipe-card-content">
-                <div class="recipe-card-top"><span class="dish-icon" aria-hidden="true">✦</span><span class="card-label"><%= recipe.cuisine.upcase %></span></div>
+                <div class="recipe-card-top"><span class="diet-badge diet-<%= recipe.diet_type %>"><%= recipe.diet_label %></span><span class="card-label"><%= recipe.cuisine.upcase %></span></div>
                 <h3><%= link_to recipe.title, recipe_path(recipe) %></h3>
                 <p><%= truncate(recipe.ingredients.lines.map(&:strip).reject(&:blank?).join(" · "), length: 110) %></p>
                 <%= link_to "Get the recipe ↗", recipe_path(recipe), class: "card-link" %>
@@ -125,11 +129,11 @@
       </section>
     <% end %>
   <% else %>
-    <% if @search_query.present? %>
+    <% if @search_query.present? || @diet_filter.present? %>
       <div class="empty-state search-empty">
         <span aria-hidden="true">🍽️</span>
         <h3>No recipes found just yet</h3>
-        <p>Try another dish, cuisine, or ingredient—or browse all our recipes.</p>
+        <p>Try another search or dietary filter—or browse all our recipes.</p>
         <%= link_to "Show all recipes", root_path, class: "card-link" %>
       </div>
     <% else %>

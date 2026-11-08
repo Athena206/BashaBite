@@ -23,6 +23,23 @@ class RecipeTest < ActiveSupport::TestCase
     assert_includes recipe.errors.attribute_names, :cuisine
   end
 
+  test "defaults recipes to vegetarian and labels both dietary types" do
+    recipe = Recipe.new
+
+    assert_equal "veg", recipe.diet_type
+    assert_equal "Veg", recipe.diet_label
+
+    recipe.diet_type = "non_veg"
+    assert_equal "Non-veg", recipe.diet_label
+  end
+
+  test "requires a supported dietary type" do
+    recipe = Recipe.new(title: "Test", ingredients: "Rice", instructions: "Cook it.", diet_type: "unknown")
+
+    assert_not recipe.valid?
+    assert_includes recipe.errors.attribute_names, :diet_type
+  end
+
   test "builds narration from the recipe title, ingredients, and instructions" do
     recipe = Recipe.new(
       title: "Masala Dosa",

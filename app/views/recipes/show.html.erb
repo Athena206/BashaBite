@@ -2,6 +2,7 @@
   <%= link_to "← All recipes", root_path, class: "back-link" %>
   <p class="eyebrow"><%= @recipe.cuisine_emoji %> <%= @recipe.cuisine.upcase %> RECIPE</p>
   <h1><%= @recipe.title %> <span aria-hidden="true">✨</span></h1>
+  <span class="diet-badge diet-<%= @recipe.diet_type %>"><%= @recipe.diet_label %></span>
   <div class="featured-food detail-food">
     <%= image_tag @recipe.food_image_url, alt: "#{@recipe.title} food inspiration", class: "featured-food-image", decoding: "async" %>
     <span class="image-sticker" aria-hidden="true"><%= @recipe.cuisine_emoji %> made with love</span>

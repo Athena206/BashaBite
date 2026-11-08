@@ -1,78 +1,85 @@
 # Rasoi Tale
 
-Rasoi Tale is a Ruby on Rails recipe assistant for hands-free cooking and simple text search. Search by dish, cuisine, ingredient, or instruction, or ask by recording/uploading audio; the app finds a recipe, displays the ingredients and steps, and reads it aloud.
+Rasoi Tale is a cozy, voice-enabled recipe finder. Search by dish, cuisine, ingredient, or instruction, filter recipes by Veg or Non-veg, or ask hands-free by recording/uploading a short audio question. Browse recipes by cuisine and listen to narrated ingredients and cooking steps.
 
 ## Features
 
-- Record audio in the browser or upload an audio file.
-- Send the question to Gnani AI Prisma (speech-to-text), then match recognized words against recipe names and ingredients.
-- Display recipe ingredients and instructions, and narrate the title, ingredients, and steps with Gnani AI Timbre (text-to-speech). Playback starts automatically when the browser permits, with a visible listen/pause control as a fallback. Audio is fetched from Rails as binary; the Gnani key stays server-side.
-- Browse recipes grouped into Chinese, North Indian, South Indian, Bengali, Gujarati, and Marathi cuisine sections.
-- Browse photo-forward recipe cards with playful cuisine icons and a warm, responsive visual design.
-- Surface missing configuration, API, upload, and recipe-match errors instead of choosing a random recipe.
+- Search recipes with plain text across recipe names, cuisines, ingredients, and instructions.
+- Filter the recipe collection by Veg or Non-veg, alone or alongside text search.
+- Browse recipe cards grouped into Chinese, North Indian, South Indian, Bengali, Gujarati, and Marathi cuisines.
+- Record a voice question in the browser or upload an audio file; Gnani AI Prisma transcribes it and the app finds a matching recipe.
+- View recipe ingredients and numbered cooking steps.
+- Listen to the recipe title, ingredients, and instructions using Gnani AI Timbre. Playback starts automatically when permitted; a **Listen to recipe** control is available if the browser blocks autoplay.
+- Responsive interface with food photos, cuisine icons, and recipe cards.
 
 ## Requirements
 
 - Ruby 3.2 or newer
 - Bundler
 - SQLite
-- Gnani AI API credentials and the documented Prisma/Timbre API endpoints for voice features
+- Gnani AI API key with the required STT and TTS service access for voice features
 
 ## Run locally
 
-```bash
+From PowerShell on Windows:
+
+```powershell
 bundle install
 ruby .\bin\rails db:prepare
 ruby .\bin\rails db:seed
 ruby .\bin\rails server
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Recipes can be browsed without Gnani AI credentials; voice requests require the configuration below. The seed data provides at least three dishes in each cuisine section. Add recipes in `db/seeds.rb`, assign each a cuisine, then run `ruby .\bin\rails db:seed`.
+Open [http://localhost:3000](http://localhost:3000). Search and recipe browsing work without Gnani credentials; recording, transcription, and narration require API configuration.
 
-For macOS/Linux, run the same Rails commands using `bin/rails <command>`.
+On macOS/Linux, use `bin/rails <command>` in place of `ruby .\bin\rails <command>`.
 
-## Configure Gnani AI
+### Tests
 
-The app loads `.env` automatically in development. Edit the existing `.env` file in the project root and fill in your Gnani API key and documented Prisma and Timbre URLs. The Prisma URL is prefilled; verify it against your Gnani documentation. Do not include HTTP method or header lines in endpoint values, and never commit `.env` or share your API key. `.env` is ignored by Git. Voice requests report a clear configuration error until the API key is filled in.
-
-For example:
-
-```dotenv
-GNANI_API_KEY=your-real-api-key
-GNANI_STT_ENDPOINT=https://api.vachana.ai/stt/v3
-GNANI_TTS_ENDPOINT=https://api.vachana.ai/api/v1/tts/inference
-```
-
-After saving `.env`, stop Rails with `Ctrl+C` and start it again. The server will load the values from the project file even when launched from a different terminal. In production, configure these as deployment environment variables instead.
-
-| Variable | Required | Description |
-|---|---:|---|
-| `GNANI_API_KEY` | Yes | Gnani AI API key |
-| `GNANI_STT_ENDPOINT` | Yes | Full Prisma speech-to-text endpoint URL |
-| `GNANI_TTS_ENDPOINT` | Yes | Full Timbre text-to-speech endpoint URL |
-| `GNANI_STT_FILE_FIELD` | No | Multipart audio field name; defaults to `audio_file` |
-| `GNANI_STT_MODEL` | No | Prisma model; defaults to `prisma-v3.0` |
-| `GNANI_STT_LANGUAGE_CODE` | No | Language hints; defaults to `en-IN,hi-IN` |
-| `GNANI_STT_FORMAT` | No | Transcript output format; defaults to `transliterate` (Latin script) |
-| `GNANI_STT_TRANSCRIPT_FIELD` | No | STT JSON response field containing the transcript; defaults to `transcript` |
-| `GNANI_TTS_MODEL` | No | Timbre model; defaults to `timbre-v3.0` |
-| `GNANI_TTS_VOICE` | No | Timbre voice; defaults to `Shivani` |
-| `GNANI_TTS_LANGUAGE` | No | TTS language or `auto`; defaults to `auto` |
-
-For both speech-to-text and text-to-speech, the app sends the raw API key in the `X-API-Key-ID` header. STT uses multipart form fields `audio_file`, `model`, `language_code`, and `format`; by default it hints English and Hindi and returns the transcript in Latin script. The endpoint accepts clips up to 30 seconds. TTS sends JSON containing `text`, `model`, `voice`, and `language`, and receives raw WAV audio.
-
-Use only endpoint URLs in the environment variables; do not include HTTP methods or headers. The STT documentation lists WAV, MP3, OGG, FLAC, AAC, and M4A, with a maximum clip duration of 30 seconds. A `403` `SCOPE_NOT_ALLOWED` response means the API key lacks permission for that service; ask Gnani to enable STT and/or TTS access for the key.
-
-The browser recorder needs microphone permission and a secure context: localhost works for development, while deployed sites should use HTTPS. Audio uploads are limited to 25 MB and must be WAV, MP3, OGG, FLAC, AAC, or M4A. The recorder stops at the documented 30-second STT limit.
-
-## Tests
-
-```bash
+```powershell
 ruby .\bin\rails test
 ```
 
 On macOS/Linux, run `bin/rails test`.
 
-## Demo and submission
+## Configure Gnani AI
 
-Record a short demo showing a spoken cooking question, the recognized text, the matching recipe, and its spoken instructions. Share it on LinkedIn or X (Twitter), tag Gnani AI, and use `#GnaniAI` and `#GreatIndianAIInternshipChallenge`. Submit through the official form before **November 10, 2026**.
+In the project root, copy `.env.example` to `.env` (or update the existing `.env`) and set your API key. The app loads `.env` automatically in development. Keep the key private: `.env` is Git-ignored, but do not commit it or paste the key into source files. Restart the Rails server after changing environment values. In production, set environment variables through your deployment platform.
+
+```dotenv
+GNANI_API_KEY=your-gnani-api-key
+GNANI_STT_ENDPOINT=https://api.vachana.ai/stt/v3
+GNANI_TTS_ENDPOINT=https://api.vachana.ai/api/v1/tts/inference
+```
+
+The app sends the raw key in the `X-API-Key-ID` header for both APIs.
+
+| Variable | Required | Default | Description |
+|---|---:|---|---|
+| `GNANI_API_KEY` | Yes | — | Gnani API key with STT/TTS access |
+| `GNANI_STT_ENDPOINT` | Yes | — | Prisma speech-to-text endpoint |
+| `GNANI_TTS_ENDPOINT` | Yes | — | Timbre text-to-speech endpoint |
+| `GNANI_STT_FILE_FIELD` | No | `audio_file` | Multipart audio field name |
+| `GNANI_STT_MODEL` | No | `prisma-v3.0` | Prisma model |
+| `GNANI_STT_LANGUAGE_CODE` | No | `en-IN,hi-IN` | Language hints |
+| `GNANI_STT_FORMAT` | No | `transliterate` | Transcript format; transliteration returns Latin script |
+| `GNANI_STT_TRANSCRIPT_FIELD` | No | `transcript` | STT JSON field containing recognized text |
+| `GNANI_TTS_MODEL` | No | `timbre-v3.0` | Timbre model |
+| `GNANI_TTS_VOICE` | No | `Shivani` | Timbre voice |
+| `GNANI_TTS_LANGUAGE` | No | `auto` | Language of text sent to TTS |
+
+STT audio is sent as multipart data with `audio_file`, `model`, `language_code`, and `format` fields. The documented endpoint accepts WAV, MP3, OGG, FLAC, AAC, and M4A clips up to 30 seconds. The browser recorder stops at 30 seconds, and uploads are limited to 25 MB.
+
+TTS sends JSON with the recipe narration, model, voice, language, and WAV audio settings. Gnani returns binary WAV data; the Rails audio endpoint repairs the WAV length fields when needed, and the browser plays it using a Blob object URL. The API key remains on the server.
+
+A `403` response with `SCOPE_NOT_ALLOWED` means the key lacks permission for that service. Ask Gnani to enable STT and/or TTS access for the key. A browser microphone requires permission; `localhost` is a secure context for development, while deployed sites should use HTTPS.
+
+## Add recipes
+
+Add a recipe entry to `db/seeds.rb` with a unique title, ingredients, instructions, and one cuisine from `Recipe::CUISINES`, then run:
+
+```powershell
+ruby .\bin\rails db:seed
+```
+
+Seed updates are safe to rerun: existing recipes with the same title are updated.

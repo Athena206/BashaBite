@@ -420,6 +420,57 @@ recipes = [
       Stir in peanuts, then add the rice and gently toss until evenly coated and warmed through.
       Taste, adjust lemon and salt, and serve warm or at room temperature.
     INSTRUCTIONS
+  },
+  {
+    title: "Chicken Curry",
+    cuisine: "North Indian",
+    diet_type: "non_veg",
+    ingredients: <<~INGREDIENTS,
+      500 g chicken pieces
+      2 onions, finely chopped
+      2 tomatoes, pureed
+      1 tablespoon ginger-garlic paste
+      1/2 cup plain yogurt
+      1 teaspoon ground cumin
+      1 teaspoon ground coriander
+      1/2 teaspoon turmeric
+      1 teaspoon garam masala
+      2 tablespoons oil
+      Salt to taste
+    INGREDIENTS
+    instructions: <<~INSTRUCTIONS
+      Heat oil in a heavy pan. Add onions and cook until golden.
+      Stir in ginger-garlic paste, cumin, coriander, turmeric, and salt.
+      Add tomato puree and cook until thickened and fragrant.
+      Stir in yogurt, then add the chicken pieces and coat them in the masala.
+      Cover and simmer until the chicken is fully cooked, stirring occasionally.
+      Finish with garam masala and serve hot with rice or roti.
+    INSTRUCTIONS
+  },
+  {
+    title: "Bengali Fish Curry",
+    cuisine: "Bengali",
+    diet_type: "non_veg",
+    ingredients: <<~INGREDIENTS,
+      500 g firm fish steaks
+      1 potato, peeled and cut into wedges
+      1 tomato, chopped
+      1 teaspoon turmeric
+      1 teaspoon nigella seeds
+      1 teaspoon ground cumin
+      1 teaspoon ground coriander
+      2 tablespoons mustard oil
+      1 cup water
+      Salt to taste
+    INGREDIENTS
+    instructions: <<~INSTRUCTIONS
+      Rub the fish with half the turmeric and salt. Set aside for 10 minutes.
+      Heat mustard oil in a pan and lightly fry the fish on both sides; remove and set aside.
+      Add nigella seeds and potato wedges to the pan. Cook until the potatoes begin to soften.
+      Stir in tomato, cumin, coriander, remaining turmeric, and salt.
+      Add water and simmer until the potatoes are tender.
+      Return the fish to the pan and simmer gently until cooked through. Serve with rice.
+    INSTRUCTIONS
   }
 ]
 

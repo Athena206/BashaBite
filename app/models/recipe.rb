@@ -1,4 +1,5 @@
 class Recipe < ApplicationRecord
+  DIET_TYPES = %w[veg non_veg].freeze
   CUISINES = ["Chinese", "North Indian", "South Indian", "Bengali", "Gujarati", "Marathi", "Other"].freeze
   CUISINE_IMAGES = {
     "Chinese" => "photo-1569718212165-3a8278d5f624",
@@ -21,6 +22,7 @@ class Recipe < ApplicationRecord
 
   validates :title, :ingredients, :instructions, presence: true
   validates :cuisine, inclusion: { in: CUISINES }
+  validates :diet_type, inclusion: { in: DIET_TYPES }
 
   scope :alphabetical, -> { order(:title) }
   scope :search_text, ->(query) {
@@ -52,5 +54,9 @@ class Recipe < ApplicationRecord
 
   def cuisine_emoji
     CUISINE_EMOJIS.fetch(cuisine, CUISINE_EMOJIS.fetch("Other"))
+  end
+
+  def diet_label
+    diet_type == "veg" ? "Veg" : "Non-veg"
   end
 end

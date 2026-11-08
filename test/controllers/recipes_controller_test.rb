@@ -58,6 +58,40 @@ class RecipesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".search-empty a[href='/']", text: "Show all recipes"
   end
 
+  test "filters recipes by dietary preference and keeps text search" do
+    vegetarian = Recipe.create!(
+      title: "Veg Noodles",
+      cuisine: "Chinese",
+      ingredients: "Noodles, vegetables",
+      instructions: "Stir-fry."
+    )
+    non_vegetarian = Recipe.create!(
+      title: "Chicken Noodles",
+      cuisine: "Chinese",
+      diet_type: "non_veg",
+      ingredients: "Noodles, chicken",
+      instructions: "Stir-fry."
+    )
+
+    get root_path, params: { q: "noodles", diet: "non_veg" }
+
+    assert_response :success
+    assert_select ".recipe-card h3 a", text: non_vegetarian.title
+    assert_select ".recipe-card h3 a", count: 1
+    assert_select "input[name=q][value=noodles]"
+    assert_select "select[name=diet] option[selected][value=non_veg]"
+    assert_select ".diet-non_veg", text: "Non-veg"
+    assert_not_includes response.body, vegetarian.title
+  end
+
+  test "shows an empty state when a dietary filter has no matches" do
+    get root_path, params: { diet: "non_veg" }
+
+    assert_response :success
+    assert_select ".search-empty"
+    assert_select ".search-empty a[href='/']", text: "Show all recipes"
+  end
+
   test "shows an audio player that fetches recipe audio from Rails" do
     recipe = Recipe.create!(
       title: "Test Sambar",
